@@ -12,6 +12,10 @@
 
 using namespace caf;
 using namespace caf::io;
+using namespace std;
+
+using ping_atom = atom_constant<atom("ping")>;
+using pong_atom = atom_constant<atom("pong")>;
 
 class config : public actor_system_config {
 public:
@@ -28,6 +32,26 @@ public:
     }
 };
 
-void caf_main(actor_system& system, const config& cfg){
+behavior ping(event_based_actor* self){
 
+}
+
+behavior server(broker* self, const actor& buddy){
+    aout(self) << "Server is running" << endl;
+    return {
+        [=](const new_connection_msg& msg){
+            aout(self) << "Server accepted new connection" << endl;
+        }
+    }
+}
+
+void run_server(actor_system& system, const config& cfg) {
+    cout << "Run in server-mode" << endl;
+    //auto pong_actor = system.spawn(pong);
+    auto server_actor = system.middleman().spawn_server(server)
+}
+
+void caf_main(actor_system& system, const config& cfg){
+    // Server-mode enable ise, run_server değilse, run client
+    auto f = cfg.server_mode ? run_server : run_client;
 }
